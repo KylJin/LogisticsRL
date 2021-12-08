@@ -13,14 +13,12 @@ class LogisticsEnv(Game, DictObservation):
         self.step_cnt = 0
 
         self.players = []
+        self.n_return = [0] * self.n_player
         self.current_state = self.init_map()
         self.all_observes = self.get_all_observations()
         # 每个玩家的action space list, 可以根据player_id获取对应的single_action_space
         self.joint_action_space = self.set_action_space()
-        self.info = {
-            'upper_storages': [self.players[i].upper_storage for i in range(self.n_player)],
-            'upper_capacity': [act.high.tolist() for act in self.joint_action_space]
-        }
+        self.info = {}
 
     def init_map(self):
         # 添加图中的节点
@@ -29,12 +27,14 @@ class LogisticsEnv(Game, DictObservation):
             key = vertex_info['key']
             self.add_vertex(key, vertex_info)
 
-        # 添加图中的有向边
+        # 添加图中的边
         edges = self.map_conf['edges'].copy()
         for edge_info in edges:
             start = edge_info['start']
             end = edge_info['end']
             self.add_edge(start, end, edge_info)
+            if not self.map_conf['is_graph_directed']:  # 若是无向图，则加上反方向的边
+                self.add_edge(end, start, edge_info)
 
         # 对每个节点进行初始化
         init_state = []
@@ -56,15 +56,23 @@ class LogisticsEnv(Game, DictObservation):
     def reset(self):
         self.step_cnt = 0
         self.players = []
+        self.n_return = [0] * self.n_player
+
         self.current_state = self.init_map()
         self.all_observes = self.get_all_observations()
+        self.joint_action_space = self.set_action_space()
+
+        self.info = {
+            'productions': [self.players[i].production for i in range(self.n_player)],
+            'upper_storages': [self.players[i].upper_storage for i in range(self.n_player)],
+            'upper_capacity': [act.high.tolist() for act in self.joint_action_space]
+        }
 
         return self.all_observes
 
     def step(self, all_actions):
         self.step_cnt += 1
         all_actions = self.bound_actions(all_actions)
-        self.info.update({'actual_actions': all_actions})
 
         self.current_state = self.get_next_state(all_actions)
         self.all_observes = self.get_all_observations()
@@ -72,7 +80,7 @@ class LogisticsEnv(Game, DictObservation):
         reward, single_rewards = self.get_reward(all_actions)
         done = self.is_terminal()
         self.info.update({
-            'reward': reward,
+            'actual_actions': all_actions,
             'single_rewards': single_rewards
         })
 
@@ -110,17 +118,15 @@ class LogisticsEnv(Game, DictObservation):
         # 更新每个节点当天的最终库存量以及下一天的初始库存量，
         # 并记录每个节点当天最开始的初始库存start_storages、生产量productions和消耗量demands，用于可视化
         next_state = []
-        start_storages, productions, demands = [], [], []
+        start_storages, demands = [], []
         for i in range(self.n_player):
             start_storages.append(self.players[i].final_storage)
-            productions.append(self.players[i].production)
             demands.append(self.players[i].demand)
             self.players[i].update_final_storage(out_storages[i], in_storages[i])
             self.players[i].update_init_storage()
             next_state.append(self.players[i].init_storage)
         self.info.update({
             'start_storages': start_storages,
-            'productions': productions,
             'demands': demands
         })
 
@@ -150,6 +156,7 @@ class LogisticsEnv(Game, DictObservation):
             reward = self.players[i].calc_reward(action)
             total_reward += reward
             single_rewards.append(reward)
+            self.n_return[i] += reward
 
         return total_reward, single_rewards
 
@@ -170,29 +177,28 @@ class LogisticsEnv(Game, DictObservation):
     def get_single_action_space(self, player_id):
         return self.joint_action_space[player_id]
 
-    def get_single_connections(self, player_id):
-        return self.players[player_id].get_connections()
-
     def is_terminal(self):
         is_done = self.step_cnt >= self.max_step
         return is_done
 
     def get_network_data(self):
-        network_data = {
-            'n_vertex': self.n_player,
-            'v_coords': self.map_conf.get('coords')
-        }
-
-        pd_gap, edges, edges_length = [], [], []
+        pd_gap, all_connections, all_times = [], [], []
         for i in range(self.n_player):
             vertex = self.players[i]
             pd_gap.append(vertex.production - vertex.lambda_)
-            for j in vertex.get_connections():
-                edges.append((i, j))
-                edges_length.append(vertex.get_edge(j).trans_time)
-        network_data['pd_gap'] = pd_gap  # 记录每个节点生产量和平均消耗量之间的差距
-        network_data['roads'] = edges
-        network_data['roads_length'] = edges_length
+
+            connections = vertex.get_connections()
+            all_connections.append(connections)
+            times = [vertex.get_edge(j).trans_time for j in connections]
+            all_times.append(times)
+
+        network_data = {
+            'n_vertex': self.n_player,
+            'v_coords': self.map_conf.get('coords'),
+            'pd_gap': pd_gap,  # 记录每个节点生产量和平均消耗量之间的差距
+            'connections': all_connections,
+            'trans_times': all_times
+        }
 
         return network_data
 
@@ -202,13 +208,10 @@ class LogisticsEnv(Game, DictObservation):
             'storages': self.info['start_storages'],
             'productions': self.info['productions'],
             'demands': self.info['demands'],
-            'reward': self.info['reward']
+            'total_reward': sum(self.n_return),
+            'single_rewards': self.info['single_rewards'],
+            'actions': self.info['actual_actions']
         }
-
-        actions = []
-        for action_i in self.info['actual_actions']:
-            actions += action_i
-        render_data['actions'] = actions
 
         return render_data
 
@@ -258,7 +261,7 @@ class LogisticsVertex(object):
             self.storage_loss += (self.final_storage - self.upper_storage)
             self.final_storage = self.upper_storage
 
-    def calc_reward(self, action, mu=10):
+    def calc_reward(self, action, mu=1):
         connections = self.get_connections()
         assert len(action) == len(connections)
         # 舍弃超过库存货物造成的损失
