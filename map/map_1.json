@@ -6,16 +6,16 @@
       "production": 21,
       "init_storage": 22,
       "upper_storage": 60,
-      "store_cost": 0.2,
+      "store_cost": 0.16,
       "loss_cost": 0.1,
       "lambda": 18
     },
     {
       "key": 1,
-      "production": 21,
+      "production": 20,
       "init_storage": 25,
       "upper_storage": 80,
-      "store_cost": 0.1,
+      "store_cost": 0.14,
       "loss_cost": 0.1,
       "lambda": 17
     },
@@ -24,17 +24,17 @@
       "production": 12,
       "init_storage": 30,
       "upper_storage": 100,
-      "store_cost": 0.3,
+      "store_cost": 0.18,
       "loss_cost": 0.2,
       "lambda": 23
     },
     {
       "key": 3,
-      "production": 20,
+      "production": 21,
       "init_storage": 28,
       "upper_storage": 70,
-      "store_cost": 0.1,
-      "loss_cost": 0.1,
+      "store_cost": 0.12,
+      "loss_cost": 0.12,
       "lambda": 14
     },
     {
@@ -42,8 +42,8 @@
       "production": 9,
       "init_storage": 24,
       "upper_storage": 90,
-      "store_cost": 0.3,
-      "loss_cost": 0.1,
+      "store_cost": 0.18,
+      "loss_cost": 0.2,
       "lambda": 18
     },
     {
@@ -51,8 +51,8 @@
       "production": 22,
       "init_storage": 30,
       "upper_storage": 70,
-      "store_cost": 0.1,
-      "loss_cost": 0.2,
+      "store_cost": 0.16,
+      "loss_cost": 0.15,
       "lambda": 15
     },
     {
@@ -60,7 +60,7 @@
       "production": 13,
       "init_storage": 38,
       "upper_storage": 80,
-      "store_cost": 0.2,
+      "store_cost": 0.18,
       "loss_cost": 0.2,
       "lambda": 19
     },
@@ -69,17 +69,17 @@
       "production": 19,
       "init_storage": 32,
       "upper_storage": 70,
-      "store_cost": 0.1,
-      "loss_cost": 0.2,
-      "lambda": 17
+      "store_cost": 0.16,
+      "loss_cost": 0.12,
+      "lambda": 18
     },
     {
       "key": 8,
       "production": 16,
       "init_storage": 24,
       "upper_storage": 90,
-      "store_cost": 0.2,
-      "loss_cost": 0.1,
+      "store_cost": 0.16,
+      "loss_cost": 0.2,
       "lambda": 14
     },
     {
@@ -87,9 +87,9 @@
       "production": 22,
       "init_storage": 26,
       "upper_storage": 80,
-      "store_cost": 0.1,
-      "loss_cost": 0.2,
-      "lambda": 20
+      "store_cost": 0.14,
+      "loss_cost": 0.15,
+      "lambda": 19
     }
   ],
   "coords": [
@@ -104,97 +104,98 @@
     [0, 1],
     [0, 3]
   ],
+  "is_graph_directed": false,
   "edges": [
     {
       "start": 0,
       "end": 1,
-      "upper_capacity": 18,
-      "trans_time": 14,
-      "trans_cost": 0.2
+      "upper_capacity": 24,
+      "trans_time": 7,
+      "trans_cost": 0.01
     },
     {
       "start": 1,
       "end": 2,
-      "upper_capacity": 20,
-      "trans_time": 12,
-      "trans_cost": 0.15
+      "upper_capacity": 26,
+      "trans_time": 10,
+      "trans_cost": 0.008
     },
     {
       "start": 2,
       "end": 4,
-      "upper_capacity": 14,
-      "trans_time": 21,
-      "trans_cost": 0.15
+      "upper_capacity": 21,
+      "trans_time": 13,
+      "trans_cost": 0.006
     },
     {
       "start": 3,
       "end": 2,
-      "upper_capacity": 14,
-      "trans_time": 11,
-      "trans_cost": 0.1
+      "upper_capacity": 28,
+      "trans_time": 8,
+      "trans_cost": 0.01
     },
     {
       "start": 3,
       "end": 4,
-      "upper_capacity": 18,
-      "trans_time": 14,
-      "trans_cost": 0.1
+      "upper_capacity": 25,
+      "trans_time": 11,
+      "trans_cost": 0.008
     },
     {
       "start": 3,
       "end": 5,
-      "upper_capacity": 22,
-      "trans_time": 13,
-      "trans_cost": 0.1
+      "upper_capacity": 32,
+      "trans_time": 6,
+      "trans_cost": 0.01
     },
     {
       "start": 4,
       "end": 6,
-      "upper_capacity": 10,
-      "trans_time": 22,
-      "trans_cost": 0.25
+      "upper_capacity": 20,
+      "trans_time": 16,
+      "trans_cost": 0.012
     },
     {
       "start": 5,
       "end": 4,
-      "upper_capacity": 15,
-      "trans_time": 15,
-      "trans_cost": 0.2
+      "upper_capacity": 27,
+      "trans_time": 10,
+      "trans_cost": 0.008
     },
     {
       "start": 5,
       "end": 6,
-      "upper_capacity": 18,
-      "trans_time": 18,
-      "trans_cost": 0.2
+      "upper_capacity": 30,
+      "trans_time": 12,
+      "trans_cost": 0.01
     },
     {
       "start": 7,
       "end": 2,
-      "upper_capacity": 10,
-      "trans_time": 20,
-      "trans_cost": 0.2
+      "upper_capacity": 26,
+      "trans_time": 13,
+      "trans_cost": 0.008
     },
     {
       "start": 7,
       "end": 3,
-      "upper_capacity": 12,
-      "trans_time": 16,
-      "trans_cost": 0.1
+      "upper_capacity": 23,
+      "trans_time": 6,
+      "trans_cost": 0.006
     },
     {
       "start": 8,
       "end": 7,
-      "upper_capacity": 15,
-      "trans_time": 23,
-      "trans_cost": 0.15
+      "upper_capacity": 25,
+      "trans_time": 18,
+      "trans_cost": 0.008
     },
     {
       "start": 9,
       "end": 7,
-      "upper_capacity": 11,
-      "trans_time": 18,
-      "trans_cost": 0.25
+      "upper_capacity": 29,
+      "trans_time": 10,
+      "trans_cost": 0.012
     }
   ]
 }

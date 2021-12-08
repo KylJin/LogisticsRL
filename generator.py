@@ -7,16 +7,18 @@ MIN_PRODUCTION = 10
 MAX_PRODUCTION = 50
 
 MIN_INIT_STORAGE = 10
-MAX_INIT_STORAGE = 120
+MAX_INIT_STORAGE = 80
 
-MIN_UPPER_STORAGE = 30
+MIN_UPPER_STORAGE = 80
 MAX_UPPER_STORAGE = 150
 
-MIN_STORE_COST = 1
-MAX_STORE_COST = 5
+# 扩大了10倍（×10）
+MIN_STORE_COST = 10
+MAX_STORE_COST = 20
 
-MIN_LOSS_COST = 1
-MAX_LOSS_COST = 5
+# 扩大了10倍（×10）
+MIN_LOSS_COST = 10
+MAX_LOSS_COST = 20
 
 MIN_LAMBDA = 10
 MAX_LAMBDA = 50
@@ -27,11 +29,12 @@ MAX_UPPER_CAPACITY = 20
 MIN_TRANS_TIME = 4
 MAX_TRANS_TIME = 24
 
-MIN_TRANS_COST = 1
-MAX_TRANS_COST = 3
+# 扩大了100倍（×100）
+MIN_TRANS_COST = 8
+MAX_TRANS_COST = 12
 
 
-def generate_random_map():
+def generate_random_map(is_graph_directed=True):
     num_vertex = randint(4, MAX_NUM_VERTEX)
 
     vertices, edges, connections = [], [], []
@@ -55,7 +58,7 @@ def generate_random_map():
             "end": used_vertex[(i + 1) % num_circle],
             "upper_capacity": randint(MIN_UPPER_CAPACITY, MAX_UPPER_CAPACITY),
             "trans_time": randint(MIN_TRANS_TIME, MAX_TRANS_TIME),
-            "trans_cost": randint(MIN_TRANS_COST, MAX_TRANS_COST) / 10
+            "trans_cost": randint(MIN_TRANS_COST, MAX_TRANS_COST) / 100
         }
         edges.append(edge)
 
@@ -71,7 +74,7 @@ def generate_random_map():
                 "end": v,
                 "upper_capacity": randint(MIN_UPPER_CAPACITY, MAX_UPPER_CAPACITY),
                 "trans_time": randint(MIN_TRANS_TIME, MAX_TRANS_TIME),
-                "trans_cost": randint(MIN_TRANS_COST, MAX_TRANS_COST) / 10
+                "trans_cost": randint(MIN_TRANS_COST, MAX_TRANS_COST) / 100
             }
             edges.append(edge)
 
@@ -84,7 +87,7 @@ def generate_random_map():
                 "end": i,
                 "upper_capacity": randint(MIN_UPPER_CAPACITY, MAX_UPPER_CAPACITY),
                 "trans_time": randint(MIN_TRANS_TIME, MAX_TRANS_TIME),
-                "trans_cost": randint(MIN_TRANS_COST, MAX_TRANS_COST) / 10
+                "trans_cost": randint(MIN_TRANS_COST, MAX_TRANS_COST) / 100
             }
             edges.append(edge)
 
@@ -93,6 +96,7 @@ def generate_random_map():
     map_data = {
         "n_vertex": num_vertex,
         "vertices": vertices,
+        "is_graph_directed": is_graph_directed,
         "edges": edges
     }
 

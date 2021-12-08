@@ -2,9 +2,8 @@ import random
 
 
 class RandomAgent(object):
-    def __init__(self, key, connections, n_actions, low, high):
+    def __init__(self, key, n_actions, low, high):
         self.key = key
-        self.connections = connections
         self.n_actions = n_actions
         self.action_low = low
         self.action_high = high
