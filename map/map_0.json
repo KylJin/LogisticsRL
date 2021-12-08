@@ -47,6 +47,7 @@
       "lambda": 15
     }
   ],
+  "is_graph_directed": true,
   "edges": [
     {
       "start": 0,
