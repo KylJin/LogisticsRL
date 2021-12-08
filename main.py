@@ -4,14 +4,15 @@ import json
 import argparse
 import pygame
 from env import LogisticsEnv
-from agent.Random_Agent import RandomAgent
-from agent.Rule_Agent import RuleAgent
+from algo import RandomAgent, RuleAgent, NetworkFlow
 from interface.logistics_interface import LogisticsInterface, FPS, SPD
 from generator import generate_random_map
+import matplotlib.pyplot as plt
 
 AgentDict = {
     'random': RandomAgent,
-    'rule': RuleAgent
+    'rule': RuleAgent,
+    'networkflow': NetworkFlow
 }
 
 
@@ -54,13 +55,14 @@ def run_game(args):
     Agent = AgentDict[args.algo]
     agents = []
     for i in range(n_player):
-        connections = env.get_single_connections(i)
-        action_space = env.get_single_action_space(i)
-        agent = Agent(key=i,
-                      connections=connections,
-                      n_actions=action_space.shape[0],
-                      low=action_space.low,
-                      high=action_space.high)
+        if args.algo == 'networkflow':
+            agent = Agent(map_conf=map_conf)
+        else:
+            action_space = env.get_single_action_space(i)
+            agent = Agent(key=i,
+                          n_actions=action_space.shape[0],
+                          low=action_space.low,
+                          high=action_space.high)
         agents.append(agent)
 
     # 可视化界面初始化
@@ -68,6 +70,7 @@ def run_game(args):
     pygame.display.set_caption("Simple Logistics Simulator")
     interface_ctrl = LogisticsInterface(args.width, args.height, network_data)
 
+    reward_hist = []
     observation = env.reset()
     FPSClock = pygame.time.Clock()
     # 开始游戏
@@ -75,10 +78,11 @@ def run_game(args):
         for _ in range(args.step_per_update):
             joint_actions = []
             for idx in range(n_player):
-                observation_i = observation[idx]['obs']
+                observation_i = observation[idx]
                 action_i = agents[idx].choose_action(observation_i)
                 joint_actions.append(action_i)
             observation, reward, done, info = env.step(joint_actions)
+            reward_hist.append(reward)
 
         if not args.silence:
             print("start_storages:", info['start_storages'])
@@ -111,6 +115,8 @@ def run_game(args):
             FPSClock.tick(FPS)
             pygame.display.update()
 
+    return reward_hist
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -118,12 +124,19 @@ def main():
     parser.add_argument('--height', default=800, type=int)
     parser.add_argument('--map', default=1, type=int)  # 指定地图编号，若为-1则随机生成
     parser.add_argument('--store_map', action='store_true')  # 是否保存随机生成的地图
-    parser.add_argument('--algo', default="rule", type=str, help="random/rule")
-    parser.add_argument('--step_per_update', default=100, type=int)  # 两次更新的step间隔
+    parser.add_argument('--algo', default='rule', type=str, help="random/rule/networkflow")
+    parser.add_argument('--step_per_update', default=1, type=int)  # 两次更新的step间隔
     parser.add_argument('--silence', action='store_true')  # 添加为True，即不在控制台打印结果；不加为False
     args = parser.parse_args()
 
-    run_game(args)
+    history = run_game(args)
+
+    # 查看reward趋势
+    plt.title(f"Algorithm {args.algo}'s performance on Logistics Env")
+    plt.xlabel("day")
+    plt.ylabel("reward")
+    plt.plot(list(range(len(history))), history)
+    plt.show()
 
 
 if __name__ == '__main__':
