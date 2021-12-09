@@ -1,5 +1,5 @@
 # LogisticsRL
-The implementation &amp; visualization of the Logistics environment.
+The implementation &amp; visualization of the Logistics environment for Reinforcement Learning.
 
 ## Notice
 1. The `map/map_0.json` is not tuned yet, so please don't use it.
