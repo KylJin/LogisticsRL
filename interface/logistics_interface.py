@@ -56,7 +56,7 @@ class LogisticsInterface(object):
     def __init__(self, width, height, network_data):
         self.width = width
         self.height = height
-        self.v_radius = 40
+        self.v_radius = 42
         self.n_vertex = network_data['n_vertex']
         self.pd_gap = network_data['pd_gap']  # 每个节点生产量和平均消耗量之间的差距
         self.connections = network_data['connections']
@@ -92,8 +92,8 @@ class LogisticsInterface(object):
                 drawn_roads.append((i, j))
 
         # 绘制仓库节点
-        norm = Normalize(vmin=min(self.pd_gap) - 2,
-                         vmax=max(self.pd_gap) + 2)  # 数值映射范围（略微扩大）
+        norm = Normalize(vmin=min(self.pd_gap) - 200,
+                         vmax=max(self.pd_gap) + 200)  # 数值映射范围（略微扩大）
         color_map = get_cmap('RdYlGn')  # 颜色映射表
         for coord, gap in zip(self.v_coords, self.pd_gap):
             rgb = color_map(norm(gap))[:3]
@@ -201,28 +201,28 @@ class LogisticsInterface(object):
                 zip(self.v_coords, storages, productions, demands, single_rewards, self.v_colors):
             s_text = self.font3.render(f"{round(s, 2)}", True, (44, 44, 44), color)
             s_text_rect = s_text.get_rect()
-            s_text_rect.centerx, s_text_rect.y = coord[0], coord[1] - 32
+            s_text_rect.centerx, s_text_rect.y = coord[0], coord[1] - 31
             self.screen.blit(s_text, s_text_rect)
 
             p_text = self.font3.render(f"+{round(p, 2)}", True, (35, 138, 32), color)
             p_text_rect = p_text.get_rect()
-            p_text_rect.centerx, p_text_rect.y = coord[0] + 9, coord[1] - 16
+            p_text_rect.centerx, p_text_rect.y = coord[0] + 8, coord[1] - 15
             self.screen.blit(p_text, p_text_rect)
             p_img_rect = self.p_img.get_rect()
-            p_img_rect.centerx, p_img_rect.y = coord[0] - 13, coord[1] - 16
+            p_img_rect.centerx, p_img_rect.y = coord[0] - 18, coord[1] - 15
             self.screen.blit(self.p_img, p_img_rect)
 
             d_text = self.font3.render(f"-{round(d, 2)}", True, (251, 45, 45), color)
             d_text_rect = d_text.get_rect()
-            d_text_rect.centerx, d_text_rect.y = coord[0] + 9, coord[1]
+            d_text_rect.centerx, d_text_rect.y = coord[0] + 8, coord[1] + 1
             self.screen.blit(d_text, d_text_rect)
             d_img_rect = self.d_img.get_rect()
-            d_img_rect.centerx, d_img_rect.y = coord[0] - 13, coord[1]
+            d_img_rect.centerx, d_img_rect.y = coord[0] - 18, coord[1] + 1
             self.screen.blit(self.d_img, d_img_rect)
 
             r_text = self.font3.render(f"{round(r, 2)}", True, (12, 140, 210), color)
             r_text_rect = r_text.get_rect()
-            r_text_rect.centerx, r_text_rect.y = coord[0], coord[1] + 16
+            r_text_rect.centerx, r_text_rect.y = coord[0], coord[1] + 17
             self.screen.blit(r_text, r_text_rect)
 
     def add_notation(self):
