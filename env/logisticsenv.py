@@ -261,7 +261,7 @@ class LogisticsVertex(object):
             self.storage_loss += (self.final_storage - self.upper_storage)
             self.final_storage = self.upper_storage
 
-    def calc_reward(self, action, mu=1):
+    def calc_reward(self, action, mu=1, scale=100):
         connections = self.get_connections()
         assert len(action) == len(connections)
         # 舍弃超过库存货物造成的损失
@@ -277,7 +277,7 @@ class LogisticsVertex(object):
         else:  # 因库存空缺而加的惩罚项
             reward += (mu * self.final_storage)
 
-        return reward
+        return reward / scale
 
 
 class LogisticsEdge(object):
